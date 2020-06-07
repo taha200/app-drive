@@ -66,9 +66,7 @@ class MainContainer extends React.Component {
     this.foodType = "";
     this.distance = "";
     this.modelSelected = "";
-    this.currentOrderArray = [];
-    this.pastOrderArray = [];
-    this.accepted=[];
+  
     // this.count = 0;
   }
 
@@ -81,7 +79,10 @@ class MainContainer extends React.Component {
     isNetConnected: true,
     count: 0,
     selectedIndex: 0,
-    strOnMessage: 'No Orders'
+    strOnMessage: 'No Orders',
+    currentOrderArray : [],
+    pastOrderArray : [],
+    accepted:[]
   };
   handleIndexChange = (index) => {
     this.setState({
@@ -116,7 +117,10 @@ class MainContainer extends React.Component {
     //  alert(JSON.stringify(location))
     this.latitude = location.latitude,
     this.longitude = location.longitude
-    this.fetchHomeData(this.latitude, this.longitude)
+    setTimeout(()=>{
+      this.fetchHomeData(this.latitude, this.longitude)
+
+    },4000)
 })
  setInterval(()=>{
   BackgroundGeolocation.getCurrentLocation(location => {
@@ -241,7 +245,6 @@ class MainContainer extends React.Component {
     //     })
     //   }
     // )
-    
     netStatus(status => {
 
       if (status) {
@@ -249,21 +252,18 @@ class MainContainer extends React.Component {
           GET_ALL_ORDER,
           param,
           onSuccess => {
-              this.currentOrderArray = onSuccess.order_list.current
-        this.pastOrderArray = onSuccess.order_list.past
-        this.accepted= onSuccess.order_list.accepted
     //  alert(JSON.stringify(onSuccess))
             console.log("CURRENT DATA ::::::::::::: ", this.currentOrderArray)
             console.log("PAST DATA :::::::::::: ", this.pastOrderArray)
             this.props.saveOrder(this.pastOrderArray)
 
-            this.pastOrderArray.length !==0 || this.currentOrderArray.length !== 0 || this.accepted.length !== 0 ? 
             this.setState({
-              isLoading: false
-            }) : this.setState({
-              strOnMessage: strings("order.noorder"),
-              isLoading: false
+              currentOrderArray: onSuccess.order_list.current,
+              pastOrderArray:onSuccess.order_list.past,
+              accepted: onSuccess.order_list.accepted,
+      isLoading:false
             })
+         
           },
           onFailure => {
             console.log("FAILURE :::::::::::: ", onFailure)
@@ -296,7 +296,7 @@ class MainContainer extends React.Component {
       <FlatList
         // style={{ marginTop: 10}}
         extraData={this.state}
-        data={this.currentOrderArray}
+        data={this.state.currentOrderArray}
         // data={isRTLCheck() ? this.state.selectedIndex == 0 ? this.arrayPastCategories : this.arrayCategories : this.state.selectedIndex == 0 ? this.arrayCategories : this.arrayPastCategories}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => item + index}
@@ -349,7 +349,7 @@ class MainContainer extends React.Component {
       <FlatList
         // style={{ marginTop: 10}}
         extraData={this.state}
-        data={this.accepted}
+        data={this.state.accepted}
         // data={isRTLCheck() ? this.state.selectedIndex == 0 ? this.arrayPastCategories : this.arrayCategories : this.state.selectedIndex == 0 ? this.arrayCategories : this.arrayPastCategories}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => item + index}
@@ -402,7 +402,7 @@ class MainContainer extends React.Component {
       <FlatList
         // style={{ marginTop: 10}}
         extraData={this.state}
-        data={this.pastOrderArray}
+        data={this.state.pastOrderArray}
         // data={isRTLCheck() ? this.state.selectedIndex == 0 ? this.arrayPastCategories : this.arrayCategories : this.state.selectedIndex == 0 ? this.arrayCategories : this.arrayPastCategories}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => item + index}
@@ -564,9 +564,9 @@ class MainContainer extends React.Component {
           // style={{ flexDirection: isRTLCheck() ? 'row-reverse' : 'row' }}
           arrayList={["Upcoming","Past","Active"]}
 
-          firstView={this.currentOrderArray.length > 0 ? this.createCurrentView() : <EDPlaceholderView messageToDisplay={this.state.strOnMessage} />}
-          secondView={this.pastOrderArray.length > 0 ? this.createPastView() : <EDPlaceholderView messageToDisplay={this.state.strOnMessage} />}
-          thirdView={this.accepted.length > 0 ? this.acceptedOrders() : <EDPlaceholderView messageToDisplay={this.state.strOnMessage} />}
+          firstView={this.state.currentOrderArray.length > 0 ? this.createCurrentView() : this.state.isLoading ? null : <View style={{flex:1,alignItems:"center",justifyContent:"center"}}><Text style={{color:EDColors.primary,fontSize:20}}>No Orders</Text></View>}
+          secondView={this.state.pastOrderArray.length > 0 ? this.createPastView() :this.state.isLoading ? null :  <View style={{flex:1,alignItems:"center",justifyContent:"center"}}><Text style={{color:EDColors.primary,fontSize:20}}>No Orders</Text></View>}
+          thirdView={this.state.accepted.length > 0 ? this.acceptedOrders() :this.state.isLoading ? null : <View style={{flex:1,alignItems:"center",justifyContent:"center"}}><Text style={{color:EDColors.primary,fontSize:20}}>No Orders</Text></View>}
 
        />
         {/* <View style={{ flex: 1, backgroundColor: EDColors.background }}>

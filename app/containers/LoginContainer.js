@@ -269,7 +269,7 @@ class LoginContainer extends React.Component {
     );
   }
 
-  callLoginAPI() {
+  callLoginAPI=()=>{
     let param = {
       PhoneNumber: this.state.phoneNumber,
       Password: this.state.password,
@@ -312,8 +312,6 @@ class LoginContainer extends React.Component {
         showValidationAlert(error.data.message);
       }
     );*/
-    netStatus(status => {
-      if (status) {
         this.setState({ isLoading: true });
         apiPost(
           LOGIN_URL,
@@ -350,10 +348,7 @@ class LoginContainer extends React.Component {
             showValidationAlert(error.data.message);
           }
         );
-      } else {
-        showValidationAlert(strings("general.noInternet"));
-      }
-    });
+      
   }
 
 

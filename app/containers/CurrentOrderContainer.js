@@ -101,7 +101,6 @@ class CurrentOrderContainer extends React.Component {
     }
 
     componentDidMount() {
-        alert(JSON.stringify(this.currentOrderDict))
         BackgroundGeolocation.configure({
             desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
             // stationaryRadius: 50,
